@@ -14,7 +14,7 @@ import (
 func Main() {
 	ctx := context.Background()
 	bot := tbot.New(os.Getenv("TELEGRAM_BOT_TOKEN"),
-		tbot.WithWebhook("https://chatgpt-telebot.onrender.com", ":8080"))
+		tbot.WithWebhook("https://golang-chat-gpt-telegram-bot-vercel.vercel.app", ":8080"))
 	c := bot.Client()
 
 	bot.HandleMessage(".*human:*", func(m *tbot.Message) {
