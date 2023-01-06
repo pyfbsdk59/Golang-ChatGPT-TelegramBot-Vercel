@@ -4,48 +4,65 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
-	"strconv"
 
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	gogpt "github.com/sashabaranov/go-gpt3"
-	"github.com/yanzay/tbot/v2"
 )
 
-func Main() {
+// HandlerFunc is the signature type for the main function that will handle HTTP requests.
+func HandlerFunc(w http.ResponseWriter, r *http.Request) {
+	// Create a new instance of the GPT-3 client.
+	c := gogpt.NewClient(os.Getenv("OPENAI_TOKEN"))
 	ctx := context.Background()
-	bot := tbot.New(os.Getenv("TELEGRAM_BOT_TOKEN"),
-		tbot.WithWebhook("https://golang-chat-gpt-telegram-bot-vercel.vercel.app", ":8080"))
-	c := bot.Client()
 
-	bot.HandleMessage(".*human:*", func(m *tbot.Message) {
-		///////
-		c0 := gogpt.NewClient(os.Getenv("OPENAI_TOKEN"))
+	req := gogpt.CompletionRequest{
+		Model:     "ada",
+		MaxTokens: 5,
+		Prompt:    "Lorem ipsum",
+	}
+	resp, err := c.CreateCompletion(ctx, req)
+	if err != nil {
+		return
+	}
+	fmt.Println(resp.Choices[0].Text)
 
-		maxtokens, err0 := strconv.Atoi(os.Getenv("OPENAI_MAXTOKENS"))
+	/////////////////
+	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		if err0 != nil {
-			fmt.Println("Error during conversion")
-			//return "MaxTokens Conversion Error happened!"
-		}
+	bot.Debug = true
 
-		req := gogpt.CompletionRequest{
-			Model:       "text-davinci-003",
-			MaxTokens:   maxtokens,
-			Prompt:      m.Text, //the text you typed in with human:.....
-			Temperature: 0,
-		}
-		resp, err := c0.CreateCompletion(ctx, req)
-		if err != nil {
-			//return "You got an error!"
-		} else {
-			fmt.Println(resp.Choices[0].Text)
+	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-			//return resp.Choices[0].Text
-		}
+	wh, _ := tgbotapi.NewWebhook("https://golang-chat-gpt-telegram-bot-vercel.vercel.app:8443/" + bot.Token)
 
-		////////////
+	_, err = bot.Request(wh)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		c.SendMessage(m.Chat.ID, "AI:"+resp.Choices[0].Text)
-	})
-	log.Fatal(bot.Start())
+	info, err := bot.GetWebhookInfo()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if info.LastErrorDate != 0 {
+		log.Printf("Telegram callback failed: %s", info.LastErrorMessage)
+	}
+
+	updates := bot.ListenForWebhook("/" + bot.Token)
+	go http.ListenAndServe("0.0.0.0:8443", nil)
+
+	for update := range updates {
+		log.Printf("%+v\n", update.Message.Text)
+	}
+}
+
+func main() {
+	http.HandleFunc("/", HandlerFunc)
+	http.ListenAndServe(":8080", nil)
 }

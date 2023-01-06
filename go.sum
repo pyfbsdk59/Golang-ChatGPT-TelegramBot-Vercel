@@ -1,4 +1,14 @@
+github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible h1:2cauKuaELYAEARXRkq2LrJ0yDDv1rW7+wrTEdVL3uaU=
+github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible/go.mod h1:qf9acutJ8cwBUhm1bqgz6Bei9/C/c93FPDljKWwsOgM=
+github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 h1:wG8n/XJQ07TmjbITcGiUaOtXxdrINDz1b0J1w0SzqDc=
+github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1/go.mod h1:A2S0CWkNylc2phvKXWBBdD3K0iGnDBGbzRpISP2zBl8=
 github.com/sashabaranov/go-gpt3 v0.0.0-20230103131550-2c55a49a3495 h1:63bAXFDM1WLpwFh73JO/rnTBU6dTNI+fr8W9Zmdm9wI=
 github.com/sashabaranov/go-gpt3 v0.0.0-20230103131550-2c55a49a3495/go.mod h1:BIZdbwdzxZbCrcKGMGH6u2eyGe1xFuX9Anmh3tCP8lQ=
+github.com/technoweenie/multipartstreamer v1.0.1 h1:XRztA5MXiR1TIRHxH2uNxXxaIkKQDeX7m2XsSOlQEnM=
+github.com/technoweenie/multipartstreamer v1.0.1/go.mod h1:jNVxdtShOxzAsukZwTSw6MDx5eUJoiEBsSvzDU9uzog=
+github.com/yanzay/log v0.0.0-20160419144809-87352bb23506 h1:RPrQRi67MUoUPg/3wwL9K9vKVWAB180e2WJgxC02CJE=
+github.com/yanzay/log v0.0.0-20160419144809-87352bb23506/go.mod h1:x2hAcqPbZzQz79Fzr9xEe7BM73+UsZ3nBucx2u30oSk=
+github.com/yanzay/tbot v1.0.0 h1:pKLHIvdiHRgU5iTfpWlgMTCWyD4vIQtAsOy7LCYMsAo=
+github.com/yanzay/tbot v1.0.0/go.mod h1:rS36e4e2P56jkI0bUuZtzjBBIwMIdBBTUHfI4tgG5BM=
 github.com/yanzay/tbot/v2 v2.2.0 h1:bK1+XTwY59IskXpwtHc/ItfU2uELTTqYP3pajfBaPeM=
 github.com/yanzay/tbot/v2 v2.2.0/go.mod h1:q0+8JblBq9tLAnKHdBIZsHwDvMS9TfO6mNfaAk1VrHg=
