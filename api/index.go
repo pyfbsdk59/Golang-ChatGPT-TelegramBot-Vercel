@@ -38,7 +38,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
-	wh, _ := tgbotapi.NewWebhook("https://golang-chat-gpt-telegram-bot-vercel.vercel.app:8443/" + bot.Token)
+	wh, _ := tgbotapi.NewWebhook("https://golang-chat-gpt-telegram-bot-vercel:8443/" + bot.Token)
 
 	_, err = bot.Request(wh)
 	if err != nil {
