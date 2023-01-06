@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	gogpt "github.com/sashabaranov/go-gpt3"
+	"github.com/yanzay/tbot/v2"
 )
 
 // HandlerFunc is the signature type for the main function that will handle HTTP requests.
@@ -17,52 +17,26 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	c := gogpt.NewClient(os.Getenv("OPENAI_TOKEN"))
 	ctx := context.Background()
 
-	req := gogpt.CompletionRequest{
-		Model:     "ada",
-		MaxTokens: 5,
-		Prompt:    "Lorem ipsum",
-	}
-	resp, err := c.CreateCompletion(ctx, req)
-	if err != nil {
-		return
-	}
-	fmt.Println(resp.Choices[0].Text)
+	bot := tbot.New(os.Getenv("TELEGRAM_BOT_TOKEN"),
+		tbot.WithWebhook("https://golang-chat-gpt-telegram-bot-vercel.vercel.app/", ":8080"))
+	c1 := bot.Client() //Please add your Render URL between "". 請在引號中加入你的Render網址
 
 	/////////////////
-	bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_TOKEN"))
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	bot.Debug = true
+	bot.HandleMessage(".*human:*", func(m *tbot.Message) { //The AI must be triggered by the keyword "human:"
 
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+		req := gogpt.CompletionRequest{
+			Model:     "text-davinci-003",
+			MaxTokens: 200,
+			Prompt:    m.Text, //the text you typed in
+		}
+		resp, err := c.CreateCompletion(ctx, req)
+		if err != nil {
+			return
+		}
+		fmt.Println(resp.Choices[0].Text) // the answer you got
 
-	wh, _ := tgbotapi.NewWebhook("https://golang-chat-gpt-telegram-bot-vercel:8443/" + bot.Token)
-
-	_, err = bot.Request(wh)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	info, err := bot.GetWebhookInfo()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if info.LastErrorDate != 0 {
-		log.Printf("Telegram callback failed: %s", info.LastErrorMessage)
-	}
-
-	updates := bot.ListenForWebhook("/" + bot.Token)
-	go http.ListenAndServe("0.0.0.0:8443", nil)
-
-	for update := range updates {
-		log.Printf("%+v\n", update.Message.Text)
-	}
-}
-
-func main() {
-	http.HandleFunc("/", HandlerFunc)
-	http.ListenAndServe(":8080", nil)
+		c1.SendMessage(m.Chat.ID, "AI:"+resp.Choices[0].Text) //m.Text represents the text you typed in 代表你打的文字
+	})
+	log.Fatal(bot.Start())
 }
